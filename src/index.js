@@ -132,7 +132,7 @@ const DateRangePicker = ({
       onChange({
         date: null,
         startDate: dayjs(),
-        endDate: null,
+        endDate: dayjs(),
         selecting: true,
         displayedDate: dayjs(),
       });
