@@ -39,6 +39,7 @@ const DateRangePicker = ({
   buttonTextStyle,
   presetButtons,
   open,
+  toggleElement,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [weeks, setWeeks] = useState([]);
@@ -48,7 +49,7 @@ const DateRangePicker = ({
   dayjs.extend(weekday);
   const isBetween = require("dayjs/plugin/isBetween");
   dayjs.extend(isBetween);
-  presetButtons = true
+  presetButtons = true;
   const mergedStyles = {
     backdrop: {
       ...styles.backdrop,
@@ -169,18 +170,18 @@ const DateRangePicker = ({
 
   const select = useCallback(
     (day) => {
-      console.log(day)
+      console.log(day);
       let _date = dayjs(displayedDate);
       _date = _date.set("date", day);
-      console.log(_date)
+      console.log(_date);
       if (range) {
         if (selecting) {
           if (_date.isBefore(startDate, "day")) {
-            console.log("is before")
+            console.log("is before");
             setSelecting(true);
             onChange({startDate: _date});
           } else {
-            console.log("is after")
+            console.log("is after");
             setSelecting(!selecting);
             onChange({endDate: _date});
           }
@@ -298,7 +299,9 @@ const DateRangePicker = ({
     select,
   ]);
 
-  const node = (
+  console.log(toggleElement);
+
+  const node = !toggleElement ? (
     <View>
       <TouchableWithoutFeedback onPress={_onOpen}>
         {children ? (
@@ -310,6 +313,8 @@ const DateRangePicker = ({
         )}
       </TouchableWithoutFeedback>
     </View>
+  ) : (
+    <TouchableWithoutFeedback onPress={_onOpen}>{toggleElement()}</TouchableWithoutFeedback>
   );
 
   return isOpen ? (
