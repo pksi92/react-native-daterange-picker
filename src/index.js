@@ -345,9 +345,10 @@ const DateRangePicker = ({
                 )}
               </TouchableOpacity>
               <Text style={mergedStyles.headerText}>
-                {displayedDate.format("MMMM") +
+                {displayedDate.toString()}
+                {/* {displayedDate.format("MMMM") +
                   " " +
-                  displayedDate.format("YYYY")}
+                  displayedDate.format("YYYY")} */}
               </Text>
               <TouchableOpacity onPress={nextMonth}>
                 {monthNextButton || (
@@ -439,8 +440,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: width,
     height: height,
-    justifyContent: "center",
-    alignItems: "center",
     zIndex: 2147483647,
   },
   container: {
