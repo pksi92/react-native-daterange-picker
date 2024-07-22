@@ -1,4 +1,3 @@
-import momentDefault from "moment";
 import PropTypes from "prop-types";
 import React, {useState, useEffect, useCallback} from "react";
 import {StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Image} from "react-native";
@@ -11,7 +10,6 @@ import chevronR from "./assets/chevronR.png";
 import dayjs from "dayjs";
 
 const DateRangePicker = ({
-  moment,
   startDate,
   endDate,
   onChange,
@@ -46,7 +44,11 @@ const DateRangePicker = ({
   const [weeks, setWeeks] = useState([]);
   const [selecting, setSelecting] = useState(false);
   const [dayHeaders, setDayHeaders] = useState([]);
-  const dayjs = moment || momentDefault;
+  const weekday = require("dayjs/plugin/weekday");
+  dayjs.extend(weekday);
+  const isBetween = require("dayjs/plugin/isBetween");
+  dayjs.extend(isBetween);
+  presetButtons = true
   const mergedStyles = {
     backdrop: {
       ...styles.backdrop,
@@ -167,14 +169,18 @@ const DateRangePicker = ({
 
   const select = useCallback(
     (day) => {
+      console.log(day)
       let _date = dayjs(displayedDate);
-      _date.set("date", day);
+      _date = _date.set("date", day);
+      console.log(_date)
       if (range) {
         if (selecting) {
           if (_date.isBefore(startDate, "day")) {
+            console.log("is before")
             setSelecting(true);
             onChange({startDate: _date});
           } else {
+            console.log("is after")
             setSelecting(!selecting);
             onChange({endDate: _date});
           }
@@ -194,7 +200,7 @@ const DateRangePicker = ({
         });
       }
     },
-    [dayjs, displayedDate, onChange, range, selecting, startDate],
+    [displayedDate, onChange, range, selecting, startDate],
   );
 
   useEffect(() => {
@@ -208,7 +214,7 @@ const DateRangePicker = ({
     function populateHeaders() {
       let _dayHeaders = [];
       for (let i = 0; i <= 6; ++i) {
-        let day = dayjs(displayedDate).weekday(i).format("dddd").substr(0, 2);
+        let day = dayjs(displayedDate).weekday(i).format("dddd").substring(0, 2);
         _dayHeaders.push(
           <Header
             key={`dayHeader-${i}`}
@@ -321,9 +327,7 @@ const DateRangePicker = ({
                 )}
               </TouchableOpacity>
               <Text style={mergedStyles.headerText}>
-                {displayedDate.format("MMMM") +
-                  " " +
-                  displayedDate.format("YYYY")}
+                {displayedDate.format("MMMM") + " " + displayedDate.format("YYYY")}
               </Text>
               <TouchableOpacity onPress={nextMonth}>
                 {monthNextButton || <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronR} />}
