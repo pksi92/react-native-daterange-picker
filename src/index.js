@@ -1,20 +1,14 @@
 import momentDefault from "moment";
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-  Image,
-} from "react-native";
+import React, {useState, useEffect, useCallback} from "react";
+import {StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Image} from "react-native";
 import Button from "./components/Button";
 import Day from "./components/Day";
 import Header from "./components/Header";
-import { height, width } from "./modules";
+import {height, width} from "./modules";
 import chevronL from "./assets/chevronL.png";
 import chevronR from "./assets/chevronR.png";
+import dayjs from "dayjs";
 
 const DateRangePicker = ({
   moment,
@@ -52,7 +46,7 @@ const DateRangePicker = ({
   const [weeks, setWeeks] = useState([]);
   const [selecting, setSelecting] = useState(false);
   const [dayHeaders, setDayHeaders] = useState([]);
-  const _moment = moment || momentDefault;
+  const dayjs = moment || momentDefault;
   const mergedStyles = {
     backdrop: {
       ...styles.backdrop,
@@ -108,31 +102,26 @@ const DateRangePicker = ({
 
   const previousMonth = () => {
     onChange({
-      displayedDate: _moment(displayedDate).subtract(1, "months"),
+      displayedDate: dayjs(displayedDate).subtract(1, "month"),
     });
   };
 
   const nextMonth = () => {
     onChange({
-      displayedDate: _moment(displayedDate).add(1, "months"),
+      displayedDate: dayjs(displayedDate).add(1, "month"),
     });
   };
 
   const selected = useCallback((_date, _startDate, _endDate, __date) => {
     return (
-      (_startDate &&
-        _endDate &&
-        _date.isBetween(_startDate, _endDate, null, "[]")) ||
+      (_startDate && _endDate && _date.isBetween(_startDate, _endDate, null, "[]")) ||
       (_startDate && _date.isSame(_startDate, "day")) ||
       (__date && _date.isSame(__date, "day"))
     );
   }, []);
 
   const disabled = useCallback((_date, _minDate, _maxDate) => {
-    return (
-      (_minDate && _date.isBefore(_minDate, "day")) ||
-      (_maxDate && _date.isAfter(_maxDate, "day"))
-    );
+    return (_minDate && _date.isBefore(_minDate, "day")) || (_maxDate && _date.isAfter(_maxDate, "day"));
   }, []);
 
   const today = () => {
@@ -140,18 +129,18 @@ const DateRangePicker = ({
       setSelecting(true);
       onChange({
         date: null,
-        startDate: _moment(),
+        startDate: dayjs(),
         endDate: null,
         selecting: true,
-        displayedDate: _moment(),
+        displayedDate: dayjs(),
       });
     } else {
       setSelecting(false);
       onChange({
-        date: _moment(),
+        date: dayjs(),
         startDate: null,
         endDate: null,
-        displayedDate: _moment(),
+        displayedDate: dayjs(),
       });
     }
   };
@@ -160,9 +149,9 @@ const DateRangePicker = ({
     setSelecting(false);
     onChange({
       date: null,
-      startDate: _moment().startOf("week"),
-      endDate: _moment().endOf("week"),
-      displayedDate: _moment(),
+      startDate: dayjs().startOf("week"),
+      endDate: dayjs().endOf("week"),
+      displayedDate: dayjs(),
     });
   };
 
@@ -170,24 +159,24 @@ const DateRangePicker = ({
     setSelecting(false);
     onChange({
       date: null,
-      startDate: _moment().startOf("month"),
-      endDate: _moment().endOf("month"),
-      displayedDate: _moment(),
+      startDate: dayjs().startOf("month"),
+      endDate: dayjs().endOf("month"),
+      displayedDate: dayjs(),
     });
   };
 
   const select = useCallback(
     (day) => {
-      let _date = _moment(displayedDate);
+      let _date = dayjs(displayedDate);
       _date.set("date", day);
       if (range) {
         if (selecting) {
           if (_date.isBefore(startDate, "day")) {
             setSelecting(true);
-            onChange({ startDate: _date });
+            onChange({startDate: _date});
           } else {
             setSelecting(!selecting);
-            onChange({ endDate: _date });
+            onChange({endDate: _date});
           }
         } else {
           setSelecting(!selecting);
@@ -205,7 +194,7 @@ const DateRangePicker = ({
         });
       }
     },
-    [_moment, displayedDate, onChange, range, selecting, startDate]
+    [dayjs, displayedDate, onChange, range, selecting, startDate],
   );
 
   useEffect(() => {
@@ -219,7 +208,7 @@ const DateRangePicker = ({
     function populateHeaders() {
       let _dayHeaders = [];
       for (let i = 0; i <= 6; ++i) {
-        let day = _moment(displayedDate).weekday(i).format("dddd").substr(0, 2);
+        let day = dayjs(displayedDate).weekday(i).format("dddd").substr(0, 2);
         _dayHeaders.push(
           <Header
             key={`dayHeader-${i}`}
@@ -227,7 +216,7 @@ const DateRangePicker = ({
             index={i}
             dayHeaderTextStyle={dayHeaderTextStyle}
             dayHeaderStyle={dayHeaderStyle}
-          />
+          />,
         );
       }
       return _dayHeaders;
@@ -237,15 +226,11 @@ const DateRangePicker = ({
       let _weeks = [];
       let week = [];
       let daysInMonth = displayedDate.daysInMonth();
-      let startOfMonth = _moment(displayedDate).set("date", 1);
+      let startOfMonth = dayjs(displayedDate).set("date", 1);
       let offset = startOfMonth.weekday();
-      week = week.concat(
-        Array.from({ length: offset }, (x, i) => (
-          <Day empty key={"empty-" + i} />
-        ))
-      );
+      week = week.concat(Array.from({length: offset}, (x, i) => <Day empty key={"empty-" + i} />));
       for (let i = 1; i <= daysInMonth; ++i) {
-        let _date = _moment(displayedDate).set("date", i);
+        let _date = dayjs(displayedDate).set("date", i);
         let _selected = selected(_date, startDate, endDate, date);
         let _disabled = disabled(_date, minDate, maxDate);
         week.push(
@@ -261,20 +246,18 @@ const DateRangePicker = ({
             selected={_selected}
             disabled={_disabled}
             select={select}
-          />
+          />,
         );
         if ((i + offset) % 7 === 0 || i === daysInMonth) {
           if (week.length < 7) {
             week = week.concat(
-              Array.from({ length: 7 - week.length }, (x, index) => (
-                <Day empty key={"empty-" + index} />
-              ))
+              Array.from({length: 7 - week.length}, (x, index) => <Day empty key={"empty-" + index} />),
             );
           }
           _weeks.push(
             <View key={"weeks-" + i} style={styles.week}>
               {week}
-            </View>
+            </View>,
           );
           week = [];
         }
@@ -292,7 +275,7 @@ const DateRangePicker = ({
     startDate,
     endDate,
     date,
-    _moment,
+    dayjs,
     displayedDate,
     dayHeaderTextStyle,
     dayHeaderStyle,
@@ -326,10 +309,7 @@ const DateRangePicker = ({
   return isOpen ? (
     <>
       <View style={mergedStyles.backdrop}>
-        <TouchableWithoutFeedback
-          style={styles.closeTrigger}
-          onPress={_onClose}
-        >
+        <TouchableWithoutFeedback style={styles.closeTrigger} onPress={_onClose}>
           <View style={styles.closeContainer} />
         </TouchableWithoutFeedback>
         <View>
@@ -337,58 +317,33 @@ const DateRangePicker = ({
             <View style={styles.header}>
               <TouchableOpacity onPress={previousMonth}>
                 {monthPrevButton || (
-                  <Image
-                    resizeMode="contain"
-                    style={mergedStyles.monthButtons}
-                    source={chevronL}
-                  ></Image>
+                  <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronL}></Image>
                 )}
               </TouchableOpacity>
               <Text style={mergedStyles.headerText}>
-                {displayedDate.toString()}
-                {/* {displayedDate.format("MMMM") +
+                {displayedDate.format("MMMM") +
                   " " +
-                  displayedDate.format("YYYY")} */}
+                  displayedDate.format("YYYY")}
               </Text>
               <TouchableOpacity onPress={nextMonth}>
-                {monthNextButton || (
-                  <Image
-                    resizeMode="contain"
-                    style={mergedStyles.monthButtons}
-                    source={chevronR}
-                  />
-                )}
+                {monthNextButton || <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronR} />}
               </TouchableOpacity>
             </View>
             <View style={styles.calendar}>
-              {dayHeaders && (
-                <View style={styles.dayHeaderContainer}>{dayHeaders}</View>
-              )}
+              {dayHeaders && <View style={styles.dayHeaderContainer}>{dayHeaders}</View>}
               {weeks}
             </View>
             {presetButtons && (
               <View style={mergedStyles.buttonContainer}>
-                <Button
-                  buttonStyle={buttonStyle}
-                  buttonTextStyle={buttonTextStyle}
-                  onPress={today}
-                >
+                <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={today}>
                   Today
                 </Button>
                 {range && (
                   <>
-                    <Button
-                      buttonStyle={buttonStyle}
-                      buttonTextStyle={buttonTextStyle}
-                      onPress={thisWeek}
-                    >
+                    <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisWeek}>
                       This Week
                     </Button>
-                    <Button
-                      buttonStyle={buttonStyle}
-                      buttonTextStyle={buttonTextStyle}
-                      onPress={thisMonth}
-                    >
+                    <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisMonth}>
                       This Month
                     </Button>
                   </>
