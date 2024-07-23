@@ -39,7 +39,7 @@ const DateRangePicker = ({
   buttonTextStyle,
   presetButtons,
   open,
-  inline
+  inline,
 }) => {
   const [isOpen, setIsOpen] = useState(open);
   const [weeks, setWeeks] = useState([]);
@@ -49,7 +49,6 @@ const DateRangePicker = ({
   dayjs.extend(weekday);
   const isBetween = require("dayjs/plugin/isBetween");
   dayjs.extend(isBetween);
-  presetButtons = true;
   const mergedStyles = {
     backdrop: {
       ...styles.backdrop,
@@ -348,7 +347,7 @@ const DateRangePicker = ({
     </View>
   );
 
-  if (inline) return dateRangePicker
+  if (inline) return dateRangePicker;
 
   return isOpen ? (
     <>
@@ -356,44 +355,7 @@ const DateRangePicker = ({
         <TouchableWithoutFeedback style={styles.closeTrigger} onPress={_onClose}>
           <View style={styles.closeContainer} />
         </TouchableWithoutFeedback>
-        <View>
-          <View style={mergedStyles.container}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={previousMonth}>
-                {monthPrevButton || (
-                  <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronL}></Image>
-                )}
-              </TouchableOpacity>
-              <Text style={mergedStyles.headerText}>
-                {displayedDate.format("MMMM") + " " + displayedDate.format("YYYY")}
-              </Text>
-              <TouchableOpacity onPress={nextMonth}>
-                {monthNextButton || <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronR} />}
-              </TouchableOpacity>
-            </View>
-            <View style={styles.calendar}>
-              {dayHeaders && <View style={styles.dayHeaderContainer}>{dayHeaders}</View>}
-              {weeks}
-            </View>
-            {presetButtons && (
-              <View style={mergedStyles.buttonContainer}>
-                <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={today}>
-                  Today
-                </Button>
-                {range && (
-                  <>
-                    <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisWeek}>
-                      This Week
-                    </Button>
-                    <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisMonth}>
-                      This Month
-                    </Button>
-                  </>
-                )}
-              </View>
-            )}
-          </View>
-        </View>
+        <View>{dateRangePicker}</View>
       </View>
       {node}
     </>
