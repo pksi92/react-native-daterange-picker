@@ -3,17 +3,9 @@
 A React Native component for picking date ranges or single dates.
 
 - Completely customizable
-- Uses Moment.js for handling dates
+- Uses dayjs for handling dates
 
 <img src="http://www.deniz.gg/date_range_4.gif" width=300/>
-
-## Installation
-
-`yarn add react-native-daterange-picker`
-
-or
-
-`npm install --save react-native-daterange-picker`
 
 ## Usage
 
