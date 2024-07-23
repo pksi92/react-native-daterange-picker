@@ -39,9 +39,9 @@ const DateRangePicker = ({
   buttonTextStyle,
   presetButtons,
   open,
-  toggleElement,
+  inline
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
   const [weeks, setWeeks] = useState([]);
   const [selecting, setSelecting] = useState(false);
   const [dayHeaders, setDayHeaders] = useState([]);
@@ -299,9 +299,7 @@ const DateRangePicker = ({
     select,
   ]);
 
-  console.log(toggleElement);
-
-  const node = !toggleElement ? (
+  const node = (
     <View>
       <TouchableWithoutFeedback onPress={_onOpen}>
         {children ? (
@@ -313,9 +311,44 @@ const DateRangePicker = ({
         )}
       </TouchableWithoutFeedback>
     </View>
-  ) : (
-    <TouchableWithoutFeedback onPress={_onOpen}>{toggleElement()}</TouchableWithoutFeedback>
   );
+
+  const dateRangePicker = (
+    <View style={mergedStyles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={previousMonth}>
+          {monthPrevButton || <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronL}></Image>}
+        </TouchableOpacity>
+        <Text style={mergedStyles.headerText}>{displayedDate.format("MMMM") + " " + displayedDate.format("YYYY")}</Text>
+        <TouchableOpacity onPress={nextMonth}>
+          {monthNextButton || <Image resizeMode="contain" style={mergedStyles.monthButtons} source={chevronR} />}
+        </TouchableOpacity>
+      </View>
+      <View style={styles.calendar}>
+        {dayHeaders && <View style={styles.dayHeaderContainer}>{dayHeaders}</View>}
+        {weeks}
+      </View>
+      {presetButtons && (
+        <View style={mergedStyles.buttonContainer}>
+          <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={today}>
+            Today
+          </Button>
+          {range && (
+            <>
+              <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisWeek}>
+                This Week
+              </Button>
+              <Button buttonStyle={buttonStyle} buttonTextStyle={buttonTextStyle} onPress={thisMonth}>
+                This Month
+              </Button>
+            </>
+          )}
+        </View>
+      )}
+    </View>
+  );
+
+  if (inline) return dateRangePicker
 
   return isOpen ? (
     <>
@@ -404,6 +437,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: width,
     height: height,
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 2147483647,
   },
   container: {
